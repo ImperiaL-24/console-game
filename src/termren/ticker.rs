@@ -55,7 +55,7 @@ impl Ticker {
         });
         _test1
     }
-    //TODO: accept borrow variable; perhaps send in a mutex with it -> overload this function
+
     pub fn add_ticked(&mut self, ticker: impl Tickable + Send + Sync + 'static) {
         self.tickers.push(Arc::new(Mutex::new(ticker)));
     }

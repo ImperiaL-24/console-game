@@ -1,5 +1,6 @@
 use core::time::Duration;
-use crate::termren::world::Scene;
+use crate::component::component::Value;
+use crate::component::world::Scene;
 use crate::termren::ticker::Ticker;
 use crate::termren::ticker::Tickable;
 use crate::termren::ticker::TickCode::{self, Success};
@@ -7,19 +8,15 @@ use crate::termren::ticker::TickCode::{self, Success};
 use std::sync::Arc;
 use std::sync::Mutex;
 
-trait Renderalbe {
-
-}
-
 pub struct Renderer {
     world: Arc<Mutex<Scene>>,
+    buffer: String
 }
 
 impl Renderer {
     pub fn new(world: &Arc<Mutex<Scene>>) -> Renderer {
-        Renderer { world: world.clone() }
+        Renderer { world: world.clone(), buffer: String::new() }
     }
-    //TODO: add renderalbe
 }
 
 impl Tickable for Renderer {
@@ -29,7 +26,7 @@ impl Tickable for Renderer {
             "{}{}{}\r",
             termion::clear::All,
             termion::cursor::Goto(1, 1),
-            self.world.lock().unwrap().get_value()
+            self.world.lock().unwrap().get_entity(&1).unwrap().get_val()
         );
         Success
     }
