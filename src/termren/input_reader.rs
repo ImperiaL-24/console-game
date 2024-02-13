@@ -1,11 +1,14 @@
-use crate::termren::ticker::Ticker;
+use crate::termren::renderer::Renderer;
+use crate::termren::ticker::TickCode::{self, StopTicker, Success};
 use crate::termren::ticker::Tickable;
-use crate::termren::ticker::TickCode::{self, Success, StopTicker};
+
 use termion::input::TermRead;
 
-use termion::input::Keys;
 use core::time::Duration;
+use termion::input::Keys;
 use termion::AsyncReader;
+
+use std::sync::Arc;
 use std::sync::Mutex;
 
 pub struct InputReader {
@@ -19,13 +22,13 @@ impl InputReader {
     }
 }
 
-impl Tickable for InputReader {
-    fn tick(&mut self, ticker: &Ticker, delta_time: &Duration) -> TickCode {
+impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for InputReader {
+    fn tick(&mut self, _origin: Option<&mut (Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)>, _delta_time: &Duration) -> TickCode {
         let key_opt = self.keys.lock().unwrap().next();
         if let Some(Ok(key)) = key_opt {
             match key {
                 termion::event::Key::Esc => return StopTicker,
-                _ => println!("KEY: {:#?}", key)
+                _ => println!("KEY: {:#?}", key),
             }
         };
         Success

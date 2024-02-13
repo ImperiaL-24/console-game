@@ -1,5 +1,6 @@
-
-
+pub trait Named {
+    fn name(&self) -> String;
+}
 
 pub trait Value {
     fn get_val(&self) -> i32;
