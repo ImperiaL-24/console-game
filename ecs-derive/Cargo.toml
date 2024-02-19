@@ -1,12 +1,13 @@
-workspace = { members = ["ecs-derive"] }
 [package]
-name = "console-game"
+name = "ecs-derive"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-termion = "3.0.0"
-downcast-rs = "1.2.0"
-ecs-derive = { path = "ecs-derive" }
+syn = "2.0"
+quote = "1.0"
+
+[lib]
+proc-macro = true

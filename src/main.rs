@@ -9,14 +9,14 @@ pub mod entity;
 pub mod game;
 pub mod scene;
 pub mod termren;
-use game::entities::point::{self, Point};
+use game::entities::point::Point;
 use std::io::{self};
 use std::sync::Arc;
 use std::sync::Mutex;
 use termion::raw::IntoRawMode;
 
-const RENDER_TICKRATE: f64 = 60.0;
-const WORLD_TICKRATE: f64 = 100.0;
+const RENDER_TICKRATE: f64 = 100.0;
+const WORLD_TICKRATE: f64 = 10.0;
 
 fn main() {
     let _stdout = io::stdout().into_raw_mode().unwrap();
@@ -29,9 +29,10 @@ fn main() {
     let increase_value = Resource::new("res_1".to_string(), 100);
     scene.add_entity(increase_value);
 
-    let point = Point::new("p1".to_string(), (1, 1), (255, 255, 255));
+    let point = Point::new("p1".to_string(), (1, 1), (255, 127, 55));
+    let point2 = Point::new("p2".to_string(), (1, 2), (127, 255, 55));
     scene.add_entity(point);
-
+    scene.add_entity(point2);
     let scene_ref = Arc::new(Mutex::new(scene));
     let renderer = Renderer::new(&scene_ref);
     let input = InputReader::new();

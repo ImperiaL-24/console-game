@@ -7,11 +7,12 @@ use crate::{
         ticker::{TickCode, Tickable},
     },
 };
+use ecs_derive::entity;
 
+#[entity]
 pub struct Point {
     coord: (usize, usize),
     color: (u8, u8, u8),
-    name: String,
 }
 
 impl Point {
@@ -26,14 +27,8 @@ impl Entity for Point {
     }
 }
 
-impl Named for Point {
-    fn name(&self) -> String {
-        self.name.clone()
-    }
-}
-
 impl Tickable<Scene> for Point {
-    fn tick(&mut self, _scene_opt: Option<&mut Scene>, _delta_time: &std::time::Duration) -> TickCode {
+    fn tick(&mut self, _scene_opt: Option<&mut Scene>, _delta_time: std::time::Duration) -> TickCode {
         let mut val = self.coord.0 + 1;
         if val > 9 {
             val = 0

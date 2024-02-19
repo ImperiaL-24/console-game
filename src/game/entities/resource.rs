@@ -1,3 +1,5 @@
+use ecs_derive::entity;
+
 use crate::{
     component::component::{Named, Value},
     entity::entity::Entity,
@@ -7,10 +9,10 @@ use crate::{
         ticker::{TickCode, Tickable},
     },
 };
-
+//TODO: generic resource + special place in scene
+#[entity]
 pub struct Resource {
     value: i32,
-    name: String,
 }
 
 impl Resource {
@@ -25,12 +27,6 @@ impl Entity for Resource {
     }
 }
 
-impl Named for Resource {
-    fn name(&self) -> String {
-        self.name.clone()
-    }
-}
-
 impl Value for Resource {
     fn get_val(&self) -> i32 {
         self.value
@@ -42,7 +38,7 @@ impl Value for Resource {
 }
 
 impl Tickable<Scene> for Resource {
-    fn tick(&mut self, _scene_opt: Option<&mut Scene>, _delta_time: &std::time::Duration) -> TickCode {
+    fn tick(&mut self, _scene_opt: Option<&mut Scene>, _delta_time: std::time::Duration) -> TickCode {
         TickCode::Success
     }
 }

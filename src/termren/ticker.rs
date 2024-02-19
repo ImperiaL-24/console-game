@@ -18,13 +18,13 @@ pub enum TickCode {
 }
 
 pub trait Tickable<T>: Send + Sync {
-    fn tick(&mut self, _origin: Option<&mut T>, _delta_time: &Duration) -> TickCode {
+    fn tick(&mut self, _origin: Option<&mut T>, _delta_time: Duration) -> TickCode {
         TickCode::Success
     }
 }
 
 impl<T: Tickable<(Arc<Mutex<T>>, Arc<Mutex<K>>)>, K: Tickable<(Arc<Mutex<T>>, Arc<Mutex<K>>)>> Tickable<(Arc<Mutex<T>>, Arc<Mutex<K>>)> for (Arc<Mutex<T>>, Arc<Mutex<K>>) {
-    fn tick(&mut self, _origin: Option<&mut (Arc<Mutex<T>>, Arc<Mutex<K>>)>, delta_time: &Duration) -> TickCode {
+    fn tick(&mut self, _origin: Option<&mut (Arc<Mutex<T>>, Arc<Mutex<K>>)>, delta_time: Duration) -> TickCode {
         let (t0, t1) = self.clone();
         let mut u0 = t0.lock().unwrap();
         let mut u1 = t1.lock().unwrap();
@@ -40,7 +40,7 @@ impl<T: Tickable<(Arc<Mutex<T>>, Arc<Mutex<K>>)>, K: Tickable<(Arc<Mutex<T>>, Ar
 }
 
 impl<T: Tickable<T>> Tickable<Arc<Mutex<T>>> for Arc<Mutex<T>> {
-    fn tick(&mut self, _origin: Option<&mut Arc<Mutex<T>>>, delta_time: &Duration) -> TickCode {
+    fn tick(&mut self, _origin: Option<&mut Arc<Mutex<T>>>, delta_time: Duration) -> TickCode {
         self.lock().unwrap().tick(None, delta_time);
         TickCode::Success
     }
@@ -63,7 +63,7 @@ impl<T: Tickable<T> + 'static> Ticker<T> {
                 continue;
             }
 
-            let code = self.tickable.tick(None, &delta_time);
+            let code = self.tickable.tick(None, delta_time);
 
             match code {
                 TickCode::StopTicker => {

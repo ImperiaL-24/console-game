@@ -1,3 +1,5 @@
+use ecs_derive::entity;
+
 use crate::component::component::Value;
 use crate::termren::renderer::RenderData;
 use crate::{
@@ -8,9 +10,10 @@ use crate::{
 };
 
 use super::resource::Resource;
+
+#[entity]
 pub struct TestEntity {
     value: i32,
-    name: String,
 }
 
 impl TestEntity {
@@ -26,12 +29,6 @@ impl Entity for TestEntity {
     }
 }
 
-impl Named for TestEntity {
-    fn name(&self) -> String {
-        self.name.clone()
-    }
-}
-
 impl Value for TestEntity {
     fn get_val(&self) -> i32 {
         self.value
@@ -43,7 +40,7 @@ impl Value for TestEntity {
 }
 
 impl Tickable<Scene> for TestEntity {
-    fn tick(&mut self, scene_opt: Option<&mut Scene>, _delta_time: &std::time::Duration) -> TickCode {
+    fn tick(&mut self, scene_opt: Option<&mut Scene>, _delta_time: std::time::Duration) -> TickCode {
         let scene = scene_opt.unwrap();
 
         if scene.entities().len() < 30 {

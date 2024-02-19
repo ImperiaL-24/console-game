@@ -23,7 +23,7 @@ impl InputReader {
 }
 
 impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for InputReader {
-    fn tick(&mut self, _origin: Option<&mut (Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)>, _delta_time: &Duration) -> TickCode {
+    fn tick(&mut self, _origin: Option<&mut (Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)>, _delta_time: Duration) -> TickCode {
         let key_opt = self.keys.lock().unwrap().next();
         if let Some(Ok(key)) = key_opt {
             match key {
