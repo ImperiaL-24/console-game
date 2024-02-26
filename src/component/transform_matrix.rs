@@ -6,7 +6,7 @@ use std::{
 use super::vec3::Vec3;
 
 #[derive(PartialEq)]
-struct TransformMatrix([f64; 16]);
+pub struct TransformMatrix([f64; 16]);
 
 impl TransformMatrix {
     pub fn new() -> TransformMatrix {

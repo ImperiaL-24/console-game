@@ -1,4 +1,5 @@
-use crate::component::component::{Pos, Rot, Scale};
+use crate::component::component::Pos;
+use crate::component::mesh::{self, Mesh};
 use crate::component::transform_matrix::TransformMatrix;
 use crate::{
     component::{
@@ -15,29 +16,24 @@ use crate::{
 use ecs_derive::entity;
 
 #[entity(Pos)]
-pub struct PointEntity {
-    color: (u8, u8, u8),
+pub struct MeshEntity {
+    mesh: Mesh,
 }
 
-impl PointEntity {
-    pub fn new(name: String, pos: Vec3, color: (u8, u8, u8)) -> PointEntity {
-        PointEntity { name, color, pos }
+impl MeshEntity {
+    pub fn new(name: String, pos: Vec3, mesh: Mesh) -> MeshEntity {
+        MeshEntity { name, mesh, pos }
     }
 }
 
-impl Entity for PointEntity {
+impl Entity for MeshEntity {
     fn render_data(&self) -> Option<RenderData> {
-        Some(RenderData::point(self.pos.clone(), self.color))
+        Some(RenderData::mesh(&self.mesh))
     }
 }
 
-impl Tickable<Scene> for PointEntity {
+impl Tickable<Scene> for MeshEntity {
     fn tick(&mut self, _scene_opt: Option<&mut Scene>, delta_time: std::time::Duration) -> TickCode {
-        let mut val = self.pos[0] + 5. * delta_time.as_secs_f64();
-        if val > 85. {
-            val -= 85.
-        }
-        self.pos[0] = val;
         TickCode::Success
     }
 }

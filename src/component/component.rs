@@ -1,19 +1,29 @@
-use super::vec3::Vec3;
+use super::{transform_matrix::TransformMatrix, vec3::Vec3};
 
 pub trait Named {
     fn name(&self) -> String;
 }
-//TODO: derives of traits + position rotation + camera
+//TODO: camera
 pub trait Value {
     fn get_val(&self) -> i32;
     fn set_val(&mut self, value: i32);
 }
-// TODO: implement a transform matrix? idfk
-pub trait Transform {
+
+pub trait Pos: Transform {
     fn pos(&self) -> Vec3;
-    fn set_pos(&self, new_pos: Vec3);
+    fn set_pos(&mut self, new_pos: Vec3);
+}
+
+pub trait Rot: Transform {
     fn rot(&self) -> Vec3; // TODO: or a Rot idk
-    fn set_rot(&self, new_rot: Vec3);
+    fn set_rot(&mut self, new_rot: Vec3);
+}
+
+pub trait Scale: Transform {
     fn scale(&self) -> f64;
-    fn set_scale(&self, new_scale: f64);
+    fn set_scale(&mut self, new_scale: f64);
+}
+
+pub trait Transform {
+    fn as_transform(&self) -> TransformMatrix;
 }

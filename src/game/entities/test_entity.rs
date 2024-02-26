@@ -22,7 +22,7 @@ impl TestEntity {
     }
 }
 
-//TODO: change i32 to smth meaningful -> enum (screen -> anchor + offset + size + text whatever / world -> a mesh + material + position)
+//TODO: enum (screen -> anchor + offset + size + text whatever / world -> a mesh + material + position)
 impl Entity for TestEntity {
     fn render_data(&self) -> Option<RenderData> {
         None

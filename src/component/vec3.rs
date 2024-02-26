@@ -1,9 +1,9 @@
-use std::ops::{Index, IndexMut};
+use std::ops::{Index, IndexMut, Mul};
 
-#[derive(PartialEq, Default)]
+#[derive(PartialEq, Default, Clone)]
 // switch from tuple to array
 pub struct Vec3(f64, f64, f64);
-// TODO: inline shit
+
 impl Index<usize> for Vec3 {
     type Output = f64;
 
@@ -37,5 +37,23 @@ impl Vec3 {
 
     fn distance_to(&self, point: &Vec3) {}
 
-    fn normalize(&self) {}
+    pub fn normalize(&mut self) {
+        let norm = f64::sqrt(self[0] * self[0] + self[1] * self[1] + self[2] * self[2]);
+        self[0] /= norm;
+        self[1] /= norm;
+        self[2] /= norm;
+    }
+}
+
+impl Into<Vec3> for (f64, f64, f64) {
+    fn into(self) -> Vec3 {
+        Vec3::new(self)
+    }
+}
+
+impl Mul<f64> for Vec3 {
+    type Output = Vec3;
+    fn mul(self, rhs: f64) -> Self::Output {
+        (self[0] * rhs, self[1] * rhs, self[2] * rhs).into()
+    }
 }

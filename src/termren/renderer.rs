@@ -1,26 +1,65 @@
-use crate::game::entities::point::Point;
+use crate::component::mesh::Mesh;
+use crate::component::vec3::Vec3;
+use crate::game::entities::point::PointEntity;
 use crate::scene::scene::Scene;
 use crate::termren::ticker::TickCode::{self, Success};
 use crate::termren::ticker::Tickable;
+use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
+use rayon::vec;
 use termion::terminal_size;
 
 use core::time::Duration;
-use std::slice::Windows;
-use std::{io, thread};
+use std::cmp::max;
+use std::io;
 
 use super::input_reader::InputReader;
 use std::io::Write;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-pub struct RenderData {
-    coord: (usize, usize),
+trait PushSpace<T> {
+    unsafe fn push_space(&mut self);
+}
+
+impl PushSpace<char> for String {
+    #[inline]
+    unsafe fn push_space(&mut self) {
+        let len = self.len();
+        if self.capacity() == len {
+            self.reserve(1);
+        }
+        let ptr = self.as_mut_vec().as_mut_ptr().add(len);
+        core::ptr::write(ptr, ' ' as u8);
+        self.as_mut_vec().set_len(len + 1);
+    }
+}
+
+pub struct Point {
+    pos: Vec3,
     color: (u8, u8, u8),
 }
 
-impl RenderData {
-    pub fn new(coord: (usize, usize), color: (u8, u8, u8)) -> RenderData {
-        RenderData { coord, color }
+pub struct Line {
+    pos1: Vec3,
+    pos2: Vec3,
+    color: (u8, u8, u8),
+}
+
+pub enum RenderData<'a> {
+    Point(Point),
+    Line(Line),
+    Mesh(&'a Mesh),
+}
+
+impl RenderData<'_> {
+    pub fn point(pos: Vec3, color: (u8, u8, u8)) -> RenderData<'static> {
+        RenderData::Point(Point { pos, color })
+    }
+    pub fn line(pos1: Vec3, pos2: Vec3, color: (u8, u8, u8)) -> RenderData<'static> {
+        RenderData::Line(Line { pos1, pos2, color })
+    }
+    pub fn mesh(mesh: &Mesh) -> RenderData {
+        RenderData::Mesh(mesh)
     }
 }
 
@@ -39,57 +78,56 @@ impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for Renderer {
         let size: (u16, u16) = terminal_size().unwrap();
         let width = size.0 as usize;
         let height = size.1 as usize - 2;
-        //TODO: matrix struct or smth
+        //TODO: matrix struct or smth -> implement transparency
         let mut state: Vec<Vec<(u8, u8, u8)>> = vec![vec![(0, 0, 0); width]; height];
 
         for (id, entity) in self.scene.lock().unwrap().entities() {
             let entity = entity.lock().unwrap();
             if let Some(render_data) = entity.render_data() {
-                state[render_data.coord.1][render_data.coord.0] = render_data.color;
+                match render_data {
+                    RenderData::Point(point) => {
+                        state[point.pos[1] as usize][point.pos[0] as usize] = point.color;
+                    }
+                    RenderData::Mesh(mesh) => {
+                        let tris = mesh.tris();
+                        for tri in tris {
+                            let verts = tri.verts();
+                            let maxy = f64::max(verts[0][1], f64::max(verts[1][1], verts[2][1])) as usize;
+                            let miny = f64::min(verts[0][1], f64::min(verts[1][1], verts[2][1])) as usize;
+                            let ysum = (verts[0][1] + verts[1][1] + verts[2][1]) as usize;
+                            let midy = ysum - maxy - miny;
+
+                            //TODO: get equation of line and fill in with color
+
+                            for i in maxy..midy {
+                                for j in 
+                            }
+                            for i in midy..=miny {}
+                        }
+                    }
+                    RenderData::Line(line) => (),
+                }
             }
         }
 
         //TODO: try to multithread better -> bruhaps create the buffer in a separate thread and print in separate thread and not join
 
         let mut last_color = state[0][0];
-        let mut buffer = format!("\x1b[38;2;{};{};{}m", last_color.0, last_color.1, last_color.2);
-        // let mut buffer = String::new();
+        let mut buffer = format!("\x1b[48;2;{};{};{}m", last_color.0, last_color.1, last_color.2);
         buffer.reserve_exact(width * height);
-
-        // let mut thread_handles = vec![];
-
         for pixel_line in state {
-            // thread_handles.push(thread::spawn(move || {
-            // let mut buffer = String::new();
-
-            // for pixel in pixel_line.iter() {
-            //     if last_color == *pixel {
-            //         buffer.push('█');
-            //     } else {
-            //         buffer.push_str(&format!("\x1b[38;2;{};{};{}m█", pixel.0, pixel.1, pixel.2));
-            //         last_color = *pixel;
-            //     }
-            // }
-            for pixel in pixel_line.iter() {
-                if last_color == *pixel {
-                    buffer.push(' ');
+            for pixel in pixel_line {
+                if last_color == pixel {
+                    unsafe { buffer.push_space() };
+                    // buffer.push(' ');
                 } else {
                     buffer.push_str(&format!("\x1b[48;2;{};{};{}m ", pixel.0, pixel.1, pixel.2));
-                    last_color = *pixel;
+                    last_color = pixel;
                 }
             }
-            // buffer
-            //}));
         }
-
-        // for thread in thread_handles.into_iter() {
-        //     let buf = thread.join().unwrap();
-        //     buffer.push_str(buf.as_str());
-        // }
-        // thread::spawn(move || {
         let mut out = io::stdout().lock();
         writeln!(out, "{}{}{}\x1b[0mFPS: {}\r", termion::clear::All, termion::cursor::Goto(1, 1), buffer, 1000000000 / delta_time.as_nanos()).unwrap_or(());
-        // });
         Success
     }
 }

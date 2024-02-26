@@ -4,7 +4,6 @@ use crate::scene::scene::Scene;
 use crate::termren::renderer::RenderData;
 use crate::{component::component::Named, termren::ticker::Tickable};
 
-//TODO: Work torwards a generic Entity
 pub trait Entity: Named + Tickable<Scene> + Downcast {
     fn render_data(&self) -> Option<RenderData> {
         None
