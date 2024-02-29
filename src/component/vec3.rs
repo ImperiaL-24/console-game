@@ -1,7 +1,7 @@
-use std::ops::{Index, IndexMut, Mul};
+use std::ops::{Index, IndexMut, Mul, Div, Add, Sub};
 
-#[derive(PartialEq, Default, Clone)]
-// switch from tuple to array
+#[derive(PartialEq, Default, Clone, Copy)]
+// TODO: switch from tuple to array
 pub struct Vec3(f64, f64, f64);
 
 impl Index<usize> for Vec3 {
@@ -28,14 +28,14 @@ impl IndexMut<usize> for Vec3 {
     }
 }
 
-//TODO: implement these
 impl Vec3 {
     pub fn new(value: (f64, f64, f64)) -> Vec3 {
         Vec3(value.0, value.1, value.2)
     }
-    fn relative_to(&self, reference: &Vec3) {}
 
-    fn distance_to(&self, point: &Vec3) {}
+    pub fn dot(&self, vec: &Vec3) -> f64 {
+        self[0] * vec[0] + self[1] * vec[1] + self[2] * vec[2]
+    }
 
     pub fn normalize(&mut self) {
         let norm = f64::sqrt(self[0] * self[0] + self[1] * self[1] + self[2] * self[2]);
@@ -55,5 +55,33 @@ impl Mul<f64> for Vec3 {
     type Output = Vec3;
     fn mul(self, rhs: f64) -> Self::Output {
         (self[0] * rhs, self[1] * rhs, self[2] * rhs).into()
+    }
+}
+
+impl Div<f64> for Vec3 {
+    type Output = Vec3;
+    fn div(self, rhs: f64) -> Self::Output {
+        (self[0] / rhs, self[1] / rhs, self[2] / rhs).into()
+    }
+}
+
+impl Mul<Vec3> for Vec3 {
+    type Output = f64;
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        self.dot(&rhs)
+    }
+}
+
+impl Sub<Vec3> for Vec3 {
+    type Output = Vec3;
+    fn sub(self, rhs: Vec3) -> Self::Output {
+        (self[0] - rhs[0], self[1] - rhs[1], self[2] - rhs[2]).into()
+    }
+}
+
+impl Add<Vec3> for Vec3 {
+    type Output = Vec3;
+    fn add(self, rhs: Vec3) -> Self::Output {
+        (self[0] + rhs[0], self[1] + rhs[1], self[2] + rhs[2]).into()
     }
 }

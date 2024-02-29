@@ -1,11 +1,8 @@
-use std::{
-    ops::{Index, IndexMut, Mul},
-    process::Output,
-};
+use std::ops::{Index, IndexMut, Mul};
 
 use super::vec3::Vec3;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct TransformMatrix([f64; 16]);
 
 impl TransformMatrix {

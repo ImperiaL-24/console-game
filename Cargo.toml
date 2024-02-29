@@ -9,7 +9,5 @@ edition = "2021"
 [dependencies]
 termion = "3.0.0"
 downcast-rs = "1.2.0"
-proc-macro2 = "=1.0.67"
-rayon="1.8.1"
 
 ecs-derive = { path = "ecs-derive" }

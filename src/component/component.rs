@@ -1,9 +1,8 @@
-use super::{transform_matrix::TransformMatrix, vec3::Vec3};
+use crate::component::{rot::Rotation, transform_matrix::TransformMatrix, vec3::Vec3};
 
 pub trait Named {
     fn name(&self) -> String;
 }
-//TODO: camera
 pub trait Value {
     fn get_val(&self) -> i32;
     fn set_val(&mut self, value: i32);
@@ -15,8 +14,8 @@ pub trait Pos: Transform {
 }
 
 pub trait Rot: Transform {
-    fn rot(&self) -> Vec3; // TODO: or a Rot idk
-    fn set_rot(&mut self, new_rot: Vec3);
+    fn rot(&self) -> Rotation;
+    fn set_rot(&mut self, new_rot: Rotation);
 }
 
 pub trait Scale: Transform {

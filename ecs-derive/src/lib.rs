@@ -51,7 +51,7 @@ pub fn entity(args: TokenStream, input: TokenStream) -> TokenStream {
                         fields.named.push(syn::Field::parse_named.parse2(quote! { pos: Vec3 }).unwrap());
                     }
                     if has_rot {
-                        fields.named.push(syn::Field::parse_named.parse2(quote! { rot: Vec3 }).unwrap());
+                        fields.named.push(syn::Field::parse_named.parse2(quote! { rot: Rotation }).unwrap());
                     }
                     if has_scale {
                         fields.named.push(syn::Field::parse_named.parse2(quote! { scale: f64 }).unwrap());
@@ -76,10 +76,10 @@ pub fn entity(args: TokenStream, input: TokenStream) -> TokenStream {
             let rot_impl = has_rot.then(|| {
                 quote! {
                     impl Rot for #name {
-                        fn rot(&self) -> Vec3 {
+                        fn rot(&self) -> Rotation {
                             self.rot.clone()
                         }
-                        fn set_rot(&mut self, new_rot: Vec3) {
+                        fn set_rot(&mut self, new_rot: Rotation) {
                             self.rot = new_rot;
                         }
                     }
@@ -106,7 +106,7 @@ pub fn entity(args: TokenStream, input: TokenStream) -> TokenStream {
                     transform[(2,3)] = self.pos[2];
                 }
             });
-            //TODO: implement the real rotation
+            //TODO: TODO: implement the real rotation
             let trans_rot = has_rot.then(|| {
                 quote! {
                     transform[(0,0)] *= self.rot[0];

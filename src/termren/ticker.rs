@@ -47,7 +47,7 @@ impl<T: Tickable<T>> Tickable<Arc<Mutex<T>>> for Arc<Mutex<T>> {
 }
 
 //unsafe impl<T> Send for Ticker<T> {}
-
+//TODO: somehow pass better parameters to a ticked -> Rwlock
 impl<T: Tickable<T> + 'static> Ticker<T> {
     pub fn new(framerate: f64, tickable: T) -> Ticker<T> {
         Ticker { ticktime: Duration::from_secs_f64(1.0 / framerate), last_tick_time: Instant::now(), frame_count: 0, tickable }

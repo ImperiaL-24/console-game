@@ -4,10 +4,7 @@ use crate::{
     component::component::{Named, Value},
     entity::entity::Entity,
     scene::scene::Scene,
-    termren::{
-        renderer::RenderData,
-        ticker::{TickCode, Tickable},
-    },
+    termren::ticker::{TickCode, Tickable},
 };
 //TODO: generic resource + special place in scene
 #[entity]
@@ -21,11 +18,7 @@ impl Resource {
     }
 }
 
-impl Entity for Resource {
-    fn render_data(&self) -> Option<RenderData> {
-        None
-    }
-}
+impl Entity for Resource {}
 
 impl Value for Resource {
     fn get_val(&self) -> i32 {

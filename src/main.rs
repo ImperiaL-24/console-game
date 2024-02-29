@@ -1,4 +1,4 @@
-use crate::game::entities::resource::Resource;
+// use crate::game::entities::resource::Resource;
 use crate::game::entities::test_entity::TestEntity;
 use crate::scene::scene::Scene;
 use crate::termren::input_reader::InputReader;
@@ -10,38 +10,54 @@ pub mod game;
 pub mod scene;
 pub mod termren;
 use component::vec3::Vec3;
-use game::entities::point::PointEntity;
+use component::mesh::{Mesh, Tri};
+use game::entities::camera::Camera;
+use game::entities::mesh::MeshEntity;
+// use game::entities::point::PointEntity;
 use std::io::{self};
 use std::sync::Arc;
 use std::sync::Mutex;
 use termion::raw::IntoRawMode;
 
-const RENDER_TICKRATE: f64 = 100.0;
+const RENDER_TICKRATE: f64 = 60.0;
 const WORLD_TICKRATE: f64 = 40.0;
 
 fn main() {
     let _stdout = io::stdout().into_raw_mode().unwrap();
+    let camera = Camera::new("cam".to_string(), 90.);
+    let mut scene = Scene::new(camera);
+    // let entity = TestEntity::new("original".to_string(), 10);
+    // scene.add_entity(entity);
 
-    let mut scene = Scene::new();
-
-    let entity = TestEntity::new("original".to_string(), 10);
-    scene.add_entity(entity);
-
-    let increase_value = Resource::new("res_1".to_string(), 100);
-    scene.add_entity(increase_value);
-    for i in 0..100 {
-        let mut position = Vec3::new((f64::cos(i as f64 * std::f64::consts::PI / 50.), f64::sin(i as f64 * std::f64::consts::PI / 50.), 0.));
-        position = position * 40.;
-        position[1] += 40.;
-        position[0] += 40.;
-        position[1] /= 2.2;
-        let point = PointEntity::new(format!("point_{}", i), position, (255, 255, 255));
-        scene.add_entity(point);
-    }
+    // let increase_value = Resource::new("res_1".to_string(), 100);
+    // scene.add_entity(increase_value);
+    // for i in 0..400 {
+    //     let mut position = Vec3::new((f64::cos(i as f64 * std::f64::consts::PI / 200.), f64::sin(i as f64 * std::f64::consts::PI / 200.), 0.));
+    //     position = position * 40.;
+    //     position[1] += 40.;
+    //     position[0] += 40.;
+    //     position[1] *= 0.50;
+    //     let point = PointEntity::new(format!("point_{}", i), position, (255, 255, 255));
+    //     scene.add_entity(point);
+    // }
     // let point = Point::new("p1".to_string(), (1., 1., 0.).into(), (255, 127, 55));
     // let point2 = Point::new("p2".to_string(), (1., 2., 0.).into(), (127, 255, 55));
     // scene.add_entity(point);
     // scene.add_entity(point2);
+    // let point1 = PointEntity::new("point_1".to_string(), (158.,17.,0.).into(), (255, 0, 0));
+    // let point2 = PointEntity::new("point_2".to_string(), (105.,38.,0.).into(), (255, 0, 0));
+    // let point3 = PointEntity::new("point_3".to_string(), (211.,44.,0.).into(), (255, 0, 0));
+
+    // scene.add_entity(point1);
+    // scene.add_entity(point2);
+    // scene.add_entity(point3);
+
+    let tri = Tri::new((1.5,0.5,0.).into(),(0.6,-0.5,0.).into(),(2.,0.5,0.5).into());
+    let mesh = Mesh::new(tri);
+    let mesh_ent = MeshEntity::new("mesh".to_string(), (1.,0.,0.).into(), mesh, (255,255,255));
+    scene.add_entity(mesh_ent);
+
+
     let scene_ref = Arc::new(Mutex::new(scene));
     let renderer = Renderer::new(&scene_ref);
     let input = InputReader::new();

@@ -1,7 +1,6 @@
 use ecs_derive::entity;
 
 use crate::component::component::Value;
-use crate::termren::renderer::RenderData;
 use crate::{
     component::component::Named,
     entity::entity::Entity,
@@ -22,12 +21,8 @@ impl TestEntity {
     }
 }
 
-//TODO: enum (screen -> anchor + offset + size + text whatever / world -> a mesh + material + position)
-impl Entity for TestEntity {
-    fn render_data(&self) -> Option<RenderData> {
-        None
-    }
-}
+//TODO: enum (screen -> anchor + offset + size + text)
+impl Entity for TestEntity {}
 
 impl Value for TestEntity {
     fn get_val(&self) -> i32 {
