@@ -106,12 +106,20 @@ pub fn entity(args: TokenStream, input: TokenStream) -> TokenStream {
                     transform[(2,3)] = self.pos[2];
                 }
             });
-            //TODO: TODO: implement the real rotation
             let trans_rot = has_rot.then(|| {
                 quote! {
-                    transform[(0,0)] *= self.rot[0];
-                    transform[(1,1)] *= self.rot[1];
-                    transform[(2,2)] *= self.rot[2];
+                    let cos0 = f64::cos(self.rot[0]);
+                    let sin0 = f64::sin(self.rot[0]);
+                    let cos1 = f64::cos(self.rot[1]);
+                    let sin1 = f64::sin(self.rot[1]);
+                    transform[(0,0)] = cos0 * cos1;
+                    transform[(0,1)] = -sin0;
+                    transform[(0,2)] = -cos0 * sin1;
+                    transform[(1,0)] = sin0 * cos1;
+                    transform[(1,1)] = cos0;
+                    transform[(1,2)] = -sin0 * sin1;
+                    transform[(2,0)] *= sin1;
+                    transform[(2,2)] *= cos1;
                 }
             });
             let trans_scale = has_scale.then(|| {

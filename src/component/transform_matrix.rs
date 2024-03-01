@@ -49,10 +49,12 @@ impl Mul<Vec3> for TransformMatrix {
     fn mul(self, rhs: Vec3) -> Self::Output {
         let mut vec = Vec3::new((0.0, 0.0, 0.0));
         for i in 0..4 {
-            for k in 0..4 {
+            for k in 0..3 {
                 vec[i] += self[(i, k)] * rhs[k];
             }
+            vec[i] += self[(i, 3)];
         }
+
         vec
     }
 }

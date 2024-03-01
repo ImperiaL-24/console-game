@@ -1,5 +1,4 @@
 // use crate::game::entities::resource::Resource;
-use crate::game::entities::test_entity::TestEntity;
 use crate::scene::scene::Scene;
 use crate::termren::input_reader::InputReader;
 use crate::termren::renderer::Renderer;
@@ -9,8 +8,8 @@ pub mod entity;
 pub mod game;
 pub mod scene;
 pub mod termren;
-use component::vec3::Vec3;
 use component::mesh::{Mesh, Tri};
+use component::vec3::Vec3;
 use game::entities::camera::Camera;
 use game::entities::mesh::MeshEntity;
 // use game::entities::point::PointEntity;
@@ -19,7 +18,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use termion::raw::IntoRawMode;
 
-const RENDER_TICKRATE: f64 = 60.0;
+const RENDER_TICKRATE: f64 = 1000.0;
 const WORLD_TICKRATE: f64 = 40.0;
 
 fn main() {
@@ -52,11 +51,26 @@ fn main() {
     // scene.add_entity(point2);
     // scene.add_entity(point3);
 
-    let tri = Tri::new((1.5,0.5,0.).into(),(0.6,-0.5,0.).into(),(2.,0.5,0.5).into());
-    let mesh = Mesh::new(tri);
-    let mesh_ent = MeshEntity::new("mesh".to_string(), (1.,0.,0.).into(), mesh, (255,255,255));
-    scene.add_entity(mesh_ent);
+    // let tri = Tri::new((1.5, 0.5, 0.).into(), (0.6, -0.5, 0.).into(), (2., 0.5, 0.5).into());
+    // let mesh = Mesh::new(vec![tri]);
+    // let mesh_ent = MeshEntity::new("mesh".to_string(), (1., 0., 0.).into(), mesh, (255, 255, 255));
+    // scene.add_entity(mesh_ent);
 
+    let tri1 = Tri::new((-1., -1., -1.).into(), (1., -1., -1.).into(), (1., -1., 1.).into());
+    let tri2 = Tri::new((-1., -1., -1.).into(), (-1., -1., 1.).into(), (1., -1., 1.).into());
+    let tri3 = Tri::new((-1., 1., -1.).into(), (1., 1., -1.).into(), (1., 1., 1.).into());
+    let tri4 = Tri::new((-1., 1., -1.).into(), (-1., 1., 1.).into(), (1., 1., 1.).into());
+    let tri5 = Tri::new((1., -1., -1.).into(), (1., 1., -1.).into(), (1., 1., 1.).into());
+    let tri6 = Tri::new((1., -1., -1.).into(), (1., -1., 1.).into(), (1., 1., 1.).into());
+    let tri7 = Tri::new((-1., -1., -1.).into(), (-1., 1., -1.).into(), (-1., 1., 1.).into());
+    let tri8 = Tri::new((-1., -1., -1.).into(), (-1., -1., 1.).into(), (-1., 1., 1.).into());
+    let tri9 = Tri::new((-1., -1., 1.).into(), (-1., 1., 1.).into(), (1., 1., 1.).into());
+    let tri10 = Tri::new((-1., -1., 1.).into(), (1., -1., 1.).into(), (1., 1., 1.).into());
+    let tri11 = Tri::new((-1., -1., -1.).into(), (-1., 1., -1.).into(), (1., 1., -1.).into());
+    let tri12 = Tri::new((-1., -1., -1.).into(), (1., -1., -1.).into(), (1., 1., -1.).into());
+    let mesh = Mesh::new(vec![tri1, tri2, tri3, tri4, tri5, tri6, tri7, tri8, tri9, tri10, tri11, tri12]);
+    let mesh_ent = MeshEntity::new("mesh".to_string(), (6., 0., -1.).into(), mesh, (255, 255, 255));
+    scene.add_entity(mesh_ent);
 
     let scene_ref = Arc::new(Mutex::new(scene));
     let renderer = Renderer::new(&scene_ref);

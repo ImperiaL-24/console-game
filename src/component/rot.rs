@@ -1,8 +1,7 @@
-use std::ops::{Index, IndexMut};
+use crate::Vec3;
 use core::ops::Add;
-use crate::Vec3; 
+use std::ops::{Index, IndexMut};
 #[derive(PartialEq, Default, Clone)]
-// TODO: roll
 pub struct Rotation(f64, f64);
 
 impl Index<usize> for Rotation {
@@ -34,7 +33,7 @@ impl Rotation {
 
     pub fn normal(&self) -> Vec3 {
         let cos2 = f64::cos(self[1]);
-        Vec3::new((f64::cos(self[0])*cos2,f64::sin(self[0])*cos2,f64::sin(self[1])))
+        Vec3::new((f64::cos(self[0]) * cos2, f64::sin(self[0]) * cos2, f64::sin(self[1])))
     }
 }
 

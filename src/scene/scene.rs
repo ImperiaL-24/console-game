@@ -1,4 +1,3 @@
-use crate::component::component::Named;
 use crate::entity::entity::Entity;
 use crate::game::entities::camera::Camera;
 use crate::termren::ticker::TickCode::{self, Success};

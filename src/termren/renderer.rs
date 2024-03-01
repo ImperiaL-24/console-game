@@ -1,13 +1,13 @@
 use crate::component::mesh::Mesh;
+use crate::component::range::inv_range;
 use crate::component::transform_matrix::TransformMatrix;
 use crate::component::vec3::Vec3;
 use crate::scene::scene::Scene;
 use crate::termren::ticker::TickCode::{self, Success};
-use crate::termren::ticker::Tickable;   
-use termion::terminal_size;
-use crate::component::range::inv_range;
+use crate::termren::ticker::Tickable;
 use core::time::Duration;
 use std::io;
+use termion::terminal_size;
 
 use super::input_reader::InputReader;
 use super::line_render::LineRenderer;
@@ -31,7 +31,6 @@ impl PushSpace<char> for String {
         self.as_mut_vec().set_len(len + 1);
     }
 }
-
 pub struct Line {
     pos1: Vec3,
     pos2: Vec3,
@@ -46,12 +45,12 @@ pub struct RenderData<'a> {
     matrix: TransformMatrix,
     primitive: RenderPrimitive<'a>,
     //TODO: materials
-    material: (u8,u8,u8)
+    material: (u8, u8, u8),
 }
 
 impl RenderData<'_> {
-    pub fn new(matrix: TransformMatrix, primitive: RenderPrimitive, material: (u8,u8,u8)) -> RenderData<'_>{
-        RenderData{ material, matrix, primitive }
+    pub fn new(matrix: TransformMatrix, primitive: RenderPrimitive, material: (u8, u8, u8)) -> RenderData<'_> {
+        RenderData { material, matrix, primitive }
     }
 }
 
@@ -86,12 +85,12 @@ impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for Renderer {
         let height = size.1 as usize - 2;
         //TODO: matrix struct or smth -> implement transparency
         let mut state: Vec<Vec<(u8, u8, u8)>> = vec![vec![(0, 0, 0); width]; height];
-        
+
         let scene = self.scene.lock().unwrap();
         let binding = scene.active_camera();
         let camera = binding.lock().unwrap();
-        let mut verts: [(i32, i32);3] = [(0,0);3];
-        for (id, entity) in scene.entities() {
+        let mut verts: [(i32, i32); 3] = [(0, 0); 3];
+        for (_id, entity) in scene.entities() {
             let entity = entity.lock().unwrap();
             if let Some(render_data) = entity.render_data() {
                 match render_data.primitive {
@@ -102,15 +101,15 @@ impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for Renderer {
                         //TODO: BETTER TYPES IN EVERYTHING
                         let tris = mesh.tris();
                         for tri in tris {
-                            if camera.occluded(&tri,render_data.matrix.clone()) {
+                            if camera.occluded(&tri, render_data.matrix.clone()) {
                                 continue;
                             }
-                            let space_verts: [Vec3;3] = tri.verts();
+                            let space_verts: [Vec3; 3] = tri.verts();
                             for i in 0..3 {
-                                let t_vert = render_data.matrix*space_verts[i];
+                                let t_vert = render_data.matrix * space_verts[i];
                                 verts[i] = camera.project(&t_vert);
                             }
-                            verts.sort_by(|a,b| a.1.cmp(&b.1));
+                            verts.sort_by(|a, b| a.1.cmp(&b.1));
 
                             let l20 = LineRenderer::new(verts[2], verts[0]);
                             let l21 = LineRenderer::new(verts[2], verts[1]);
@@ -118,11 +117,12 @@ impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for Renderer {
 
                             //TODO: multithread?
                             for i in verts[1].1..=verts[2].1 {
-                                if i < 0 || i >= (size.1-2).into() {
+                                // TODO: smart ranges, instead of continue just select the right portion
+                                if i < 0 || i >= (size.1 - 2).into() {
                                     continue;
-                                } 
-                                for j in inv_range(l21.end(i),l20.end(i)) {
-                                    if j<0 || j >= size.0.into() {
+                                }
+                                for j in inv_range(l21.end(i), l20.end(i)) {
+                                    if j < 0 || j >= size.0.into() {
                                         continue;
                                     }
                                     //TODO: instead of a material get a fragment shader going on here!
@@ -130,11 +130,11 @@ impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for Renderer {
                                 }
                             }
                             for i in verts[0].1..=verts[1].1 {
-                                if i < 0 || i >= (size.1-2).into() {
+                                if i < 0 || i >= (size.1 - 2).into() {
                                     continue;
-                                } 
-                                for j in inv_range(l20.start(i),l10.end(i))  {
-                                    if j<0 || j >= size.0.into() {
+                                }
+                                for j in inv_range(l20.start(i), l10.end(i)) {
+                                    if j < 0 || j >= size.0.into() {
                                         continue;
                                     }
                                     state[i as usize][j as usize] = render_data.material;
@@ -142,7 +142,7 @@ impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for Renderer {
                             }
                         }
                     }
-                    RenderPrimitive::Line(line) => (),
+                    RenderPrimitive::Line(_line) => (),
                 }
             }
         }
@@ -164,7 +164,7 @@ impl Tickable<(Arc<Mutex<Renderer>>, Arc<Mutex<InputReader>>)> for Renderer {
             }
         }
         let mut out = io::stdout().lock();
-        writeln!(out, "{}{}\x1b[0mW: {} H: {} FPS: {} CAMFL: {} VERTS: {:?}{:?}{:?}\r", termion::cursor::Goto(1, 1), buffer,size.0, size.1, 1000000000 / delta_time.as_nanos(), camera.focal_length(), verts[0],verts[1],verts[2]).unwrap_or(() );
+        writeln!(out, "{}{}\x1b[0mW: {} H: {} FPS: {} CAMFL: {} VERTS: {:?}{:?}{:?}\r", termion::cursor::Goto(1, 1), buffer, size.0, size.1, 1000000000 / delta_time.as_nanos(), camera.focal_length(), verts[0], verts[1], verts[2]).unwrap_or(());
         Success
     }
 }

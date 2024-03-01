@@ -33,7 +33,7 @@ impl Entity for PointEntity {
 }
 
 impl Tickable<Scene> for PointEntity {
-    fn tick(&mut self, _scene_opt: Option<&mut Scene>, delta_time: std::time::Duration) -> TickCode {
+    fn tick(&mut self, _scene_opt: Option<&mut Scene>, _delta_time: std::time::Duration) -> TickCode {
         // let mut val = self.pos[0] + 5. * delta_time.as_secs_f64();
         // if val > 85. {
         //     val -= 85.
