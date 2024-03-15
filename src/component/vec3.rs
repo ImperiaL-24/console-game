@@ -1,7 +1,6 @@
 use std::ops::{Index, IndexMut, Mul, Div, Add, Sub};
 
 #[derive(PartialEq, Default, Clone, Copy)]
-// TODO: switch from tuple to array
 pub struct Vec3(f64, f64, f64);
 
 impl Index<usize> for Vec3 {
@@ -36,7 +35,9 @@ impl Vec3 {
     pub fn dot(&self, vec: &Vec3) -> f64 {
         self[0] * vec[0] + self[1] * vec[1] + self[2] * vec[2]
     }
-
+    pub fn cross(&self, vec: &Vec3) -> f64 {
+        Vec3::new((self[1] * vec[2]-self[2]*vec[1],self[2] * vec[1]-self[1]*vec[2],self[0] * vec[1]-self[1]*vec[0]));
+    }
     pub fn normalize(&mut self) {
         let norm = f64::sqrt(self[0] * self[0] + self[1] * self[1] + self[2] * self[2]);
         self[0] /= norm;

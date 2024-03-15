@@ -26,4 +26,11 @@ impl Tri {
     pub fn verts(&self) -> [Vec3; 3] {
         self.verts.clone()
     }
+    pub fn normal(&self) -> Vec3 {
+
+        //TODO: check that this works
+        let d = self.verts[1] - self.verts[0];
+        let e = self.verts[2] - self.verts[1];
+        d.cross(&e).normalize()
+    }
 }
